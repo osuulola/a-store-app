@@ -1,7 +1,7 @@
-import React, { Component, useState, createContext, useEffect,useRef } from 'react'
+import React, { useState, createContext, useEffect, useRef } from 'react'
 import { storeProducts, detailProduct } from "./data";
 
-const ProductContext = React.createContext();
+const ProductContext = createContext();
 
 
 const ProductProvider = (props) => {
@@ -12,39 +12,52 @@ const ProductProvider = (props) => {
     modalOpen: false,
     modalProduct: detailProduct,
     cartSubTotal: 0,
-    name:"yinka",
+    name:"",
     cartTax: 0,
     cartTotal: 0,
   });
 
-
-  const isInitialMount = useRef(true);
-
-  useEffect(() => {
-    setProducts();
-  }, []);
-
-  useEffect(() => {
-    if (isInitialMount.current) {
-      isInitialMount.current = false;
-      console.log("in mnt");
-   } else {
-    setProducts();
-    addTotals();
-    console.log("not it");
-    console.log(state);
-   } 
-   console.log("in mnt");   
-  }, [state.products,state.cart,state.modalOpen,state.name]);
-
-  const setProducts = () => {
+  const setProducts =  () => {
     let tempProducts = [];
     storeProducts.forEach(item => {
       const singleItem = { ...item };
       tempProducts = [...tempProducts, singleItem];
     })
-    setState({ ...state, products:tempProducts });
+    setState({ ...state, products:tempProducts, });
   }
+
+  const addTotals = () => {    
+    let subTotal = 0;
+    let mutCart = {...state};
+
+    mutCart.cart.map(item => (subTotal += item.total));
+    const tempTax = subTotal * 0.1;
+    const tax = parseFloat(tempTax.toFixed(2));
+    const total = subTotal + tax;    
+    setState({...state,
+      cartSubTotal: subTotal,
+      cartTax: tax,
+      cartTotal: total
+    })
+  }
+
+   const isInitialMount = useRef(true);
+
+  useEffect(() => {
+    setProducts();
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      console.log("in mnt"); 
+   } else {
+    setProducts();
+    addTotals();
+    console.log("not it");
+    // console.log(state);
+   } 
+   console.log("in mnt");   
+  },[addTotals,setProducts,]);
+
+ 
 
   const getItem = (id) => {
     const product = state.products.find(item => item.id === id);
@@ -67,10 +80,8 @@ const ProductProvider = (props) => {
   }
 
   const openModal = (id) => {
-    const product = getItem(id);
-    addTotals();
-    //setState({ ...state, modalProduct: product, modalOpen: true,name:"akan" })
-  }
+        addTotals();
+      }
 
   const closeModal = () => {
     setState({ ...state, modalOpen: false })
@@ -128,21 +139,7 @@ const ProductProvider = (props) => {
     setState({ ...state, cart: [] })
   }
 
-  const addTotals = () => {    
-    let subTotal = 0;
-    let mutCart = {...state};
-
-    mutCart.cart.map(item => (subTotal += item.total));
-    const tempTax = subTotal * 0.1;
-    const tax = parseFloat(tempTax.toFixed(2));
-    const total = subTotal + tax;    
-    setState({...state,
-      cartSubTotal: subTotal,
-      cartTax: tax,
-      cartTotal: total
-    })
-  }
-
+  
   return (<ProductContext.Provider value={{
     ...state,
     handleDetail: handleDetail,

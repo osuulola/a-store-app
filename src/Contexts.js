@@ -1,7 +1,7 @@
 import React, {Component, ProductProvider} from 'react';
 import { storeProducts, detailProduct } from "./data";
 
-class ProductProvider extends Component {
+class Context extends Component {
   state = {
       products: [],
       detailProduct: detailProduct,
@@ -17,7 +17,7 @@ class ProductProvider extends Component {
     this.setProducts();
   }
 
-  setProducts = () => {
+  setProducts =  () => {
     let tempProducts = [];
     storeProducts.forEach(item=> {
       const singleItem = {...item};
@@ -181,3 +181,4 @@ clearCart: this.clearCart
     );
   }
 }
+export { ProductProvider, ProductConsumer, ProductContext };

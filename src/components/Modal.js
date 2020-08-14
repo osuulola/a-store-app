@@ -1,6 +1,6 @@
-import React, { Component,useContext} from 'react'
+import React, { useContext} from 'react'
 import styled from 'styled-components';
-import {ProductConsumer,ProductProvider,ProductContext} from '../Context';
+import {ProductContext} from '../Context';
 import {ButtonContainer} from './Button';
 import {Link} from 'react-router-dom';
 
